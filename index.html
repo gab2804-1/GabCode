@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>GabCode</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      min-height: 100vh;
+      color: #b8ffb8;
+      overflow: hidden;
+      background: #1a1a1a;
+    }
+
+    .sidebar {
+      width: 250px;
+      background: #222;
+      border-right: 2px solid #0f0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 0 10px #0f0;
+      z-index: 2;
+      position: relative;
+    }
+
+    .sidebar h2 {
+      font-size: 22px;
+      color: #0f0;
+      text-shadow: 0 0 3px #0f0;
+      margin: 0 0 10px 0;
+    }
+
+    .sidebar-links {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .sidebar-links li a {
+      color: #0f0;
+      text-decoration: none;
+      font-size: 18px;
+      text-shadow: 0 0 3px #0f0;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .sidebar-links li a:hover {
+      color: #fff;
+      text-shadow: 0 0 10px #0f0;
+    }
+
+    .content {
+      flex: 1;
+      padding: 40px;
+      position: relative;
+      overflow-y: auto;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      background: rgba(0,0,0,0.5);
+      padding: 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav a {
+      margin: 0 20px;
+      text-decoration: none;
+      color: #b8ffb8;
+      font-weight: bold;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    nav a:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    section {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+      position: relative;
+      z-index: 1;
+    }
+
+    section.active {
+      display: block;
+    }
+
+    h1 {
+      font-size: 50px;
+      text-shadow: 0 0 10px #0f0;
+      margin-bottom: 20px;
+    }
+
+    p.slogan {
+      font-size: 22px;
+      color: #b8ffb8;
+      margin-bottom: 20px;
+      text-shadow: 0 0 3px #0f0;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      font-size: 20px;
+    }
+
+    ul li {
+      margin: 15px 0;
+    }
+
+    ul li a {
+      color: #b8ffb8;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    ul li a:hover {
+      color: #fff;
+      text-shadow: 0 0 5px #0f0;
+    }
+
+    /* Dictionnaire styles */
+    .dict-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+    }
+
+    .dict-item {
+      background: #171717;
+      border: 1px solid #0f0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+
+    .dict-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 18px rgba(0,255,0,0.08);
+    }
+
+    .dict-term {
+      font-size: 20px;
+      color: #b8ffb8;
+      font-weight: 700;
+    }
+
+    .dict-def {
+      margin-top: 8px;
+      font-size: 16px;
+      color: #dfffe0;
+      display: none;
+      line-height: 1.4;
+    }
+
+    .dict-def.visible {
+      display: block;
+    }
+
+    /* Snake canvas */
+    #snake-game {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      background: #111;
+      border: 2px solid #0f0;
+      margin: 20px auto;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; display:flex; flex-direction:row; overflow-x:auto; }
+      .sidebar-links { flex-direction:row; gap:10px; }
+      .content { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="sidebar">
+    <h2>GabCode</h2>
+    <ul class="sidebar-links">
+      <li><a onclick="showSection('web-programming')">Programmation sit web</a></li>
+      <li><a onclick="showSection('projects')">Mes projets</a></li>
+      <li><a href="documents/doc2.pdf" target="_blank">Document 2</a></li>
+      <li><a href="documents/doc3.pdf" target="_blank">Document 3</a></li>
+      <li><a onclick="showSection('snake')">Mini-jeu Snake</a></li>
+    </ul>
+  </div>
+
+  <div class="content">
+    <nav>
+      <a onclick="showSection('home')">Accueil</a>
+      <a onclick="showSection('links')">Liens</a>
+      <a onclick="showSection('dictionnaire')">Dictionnaire cyber</a> <!-- nouvel onglet -->
+    </nav>
+
+    <!-- Accueil -->
+    <section id="home" class="active">
+      <h1>Bienvenue sur GabCode</h1>
+      <p class="slogan">Explore, Apprends, Programme !</p>
+      <p>
+        🔗 Mon TikTok : 
+        <a href="https://www.tiktok.com/@lebest100" target="_blank">@lebest100</a>
+      </p>
+    </section>
+
+    <!-- Liens -->
+    <section id="links">
+      <h1>Liens utiles</h1>
+      <h2>Plateformes / Apprentissage / Cyber</h2>
+      <ul>
+        <li><a href="https://www.hackerrank.com" target="_blank">HackerRank</a></li>
+        <li><a href="https://www.codingame.com" target="_blank">CodinGame</a></li>
+        <li><a href="https://tryhackme.com" target="_blank">TryHackMe</a></li>
+        <li><a href="https://www.root-me.org" target="_blank">Root Me</a></li>
+        <li><a href="https://www.tinkercad.com" target="_blank">Tinkercad</a></li>
+        <li><a href="https://www.arduino.cc" target="_blank">Arduino</a></li>
+      </ul>
+    </section>
+
+    <!-- Dictionnaire cyber (nouveau) -->
+    <section id="dictionnaire">
+      <h1>Dictionnaire cyber</h1>
+      <p style="max-width:800px; margin:0 auto 20px;">
+        Clique sur un terme pour afficher une courte définition en dessous.
+      </p>
+
+      <div class="dict-list" id="dictList">
+        <!-- Les items sont générés en JS mais on fournit une structure HTML/backup aussi -->
+        <div class="dict-item" onclick="toggleDef('variable')">
+          <div class="dict-term">Variable</div>
+          <div id="def-variable" class="dict-def">Un emplacement nommé pour stocker une donnée (nombre, texte, vrai/faux). On peut modifier et réutiliser la valeur pendant l'exécution d'un programme.</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('boucle')">
+          <div class="dict-term">Boucle</div>
+          <div id="def-boucle" class="dict-def">Instruction qui répète une action plusieurs fois jusqu'à une condition (utile pour automatiser les tâches répétitives).</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('fonction')">
+          <div class="dict-term">Fonction</div>
+          <div id="def-fonction" class="dict-def">Bloc de code réutilisable qui réalise une tâche précise et peut recevoir des paramètres puis renvoyer un résultat.</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('api')">
+          <div class="dict-term">API (Interface)</div>
+          <div id="def-api" class="dict-def">Moyen standardisé permettant à des applications de communiquer entre elles (par exemple, ton site demande des données à un service externe).</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('algorithme')">
+          <div class="dict-term">Algorithme</div>
+          <div id="def-algorithme" class="dict-def">Suite d'instructions organisée pour résoudre un problème ou accomplir une tâche (par exemple : trier une liste).</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('debug')">
+          <div class="dict-term">Débogage</div>
+          <div id="def-debug" class="dict-def">Processus consistant à rechercher, analyser et corriger les erreurs (bugs) d'un programme afin qu'il fonctionne correctement.</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('compilateur')">
+          <div class="dict-term">Compilateur</div>
+          <div id="def-compilateur" class="dict-def">Programme qui transforme le code source écrit par le développeur en code exécutable par la machine.</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('framework')">
+          <div class="dict-term">Framework</div>
+          <div id="def-framework" class="dict-def">Ensemble d'outils et de bibliothèques qui facilite le développement en fournissant une structure prête à l'emploi.</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('bdd')">
+          <div class="dict-term">Base de données</div>
+          <div id="def-bdd" class="dict-def">Système organisé pour stocker, rechercher et gérer des informations (ex : listes d'utilisateurs, produits, résultats).</div>
+        </div>
+
+        <div class="dict-item" onclick="toggleDef('runtime')">
+          <div class="dict-term">Environnement d'exécution</div>
+          <div id="def-runtime" class="dict-def">Contexte (logiciel/machine) dans lequel un programme s'exécute, fournissant ressources et services nécessaires.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section Programmation Sit Web -->
+    <section id="web-programming">
+      <h1>Programmation Sit Web</h1>
+      <ul>
+        <li><a href="https://www.youtube.com/@limapix" target="_blank">LimaPix</a></li>
+        <li><a href="https://www.youtube.com/@algomius" target="_blank">Algomius</a></li>
+      </ul>
+    </section>
+
+    <!-- Section Mes projets -->
+    <section id="projects">
+      <h1>Mes projets</h1>
+      <p>Cette section est en construction. Ici tu pourras ajouter tes projets, scripts, sites web, etc.</p>
+    </section>
+
+    <!-- Mini-jeu Snake -->
+    <section id="snake">
+      <h1>Mini-jeu Snake</h1>
+      <canvas id="snake-game" width="400" height="400"></canvas>
+      <p>Utilise les flèches du clavier pour déplacer le serpent.</p>
+    </section>
+
+  </div>
+
+  <script>
+    function showSection(id){
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      // fermer toutes définitions quand on change de section
+      document.querySelectorAll('.dict-def').forEach(d => d.classList.remove('visible'));
+    }
+
+    // dictionnaire : affiche/masque la définition correspondante
+    function toggleDef(key){
+      const defEl = document.getElementById('def-' + key);
+      if(!defEl) return;
+      // masquer toutes
+      document.querySelectorAll('.dict-def').forEach(d => {
+        if(d !== defEl) d.classList.remove('visible');
+      });
+      defEl.classList.toggle('visible');
+      // scroll si nécessaire pour voir la définition
+      if(defEl.classList.contains('visible')){
+        defEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // --- Snake Game (identique à ce que tu avais, corrigé si besoin) ---
+    const canvas = document.getElementById("snake-game");
+    const ctx = canvas.getContext("2d");
+    const grid = 20;
+    let snake = [{x: 8 * grid, y: 8 * grid}];
+    let dx = grid;
+    let dy = 0;
+    let food = {x: Math.floor(Math.random()*20)*grid, y: Math.floor(Math.random()*20)*grid};
+    let score = 0;
+
+    document.addEventListener("keydown", e => {
+      if(e.key === "ArrowUp" && dy === 0){ dx=0; dy=-grid; }
+      if(e.key === "ArrowDown" && dy === 0){ dx=0; dy=grid; }
+      if(e.key === "ArrowLeft" && dx === 0){ dx=-grid; dy=0; }
+      if(e.key === "ArrowRight" && dx === 0){ dx=grid; dy=0; }
+    });
+
+    function gameLoop(){
+      ctx.fillStyle = "#111";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+
+      // nourriture
+      ctx.fillStyle = "#0f0";
+      ctx.fillRect(food.x, food.y, grid-1, grid-1);
+
+      // serpent
+      for(let i=0; i<snake.length; i++){
+        ctx.fillStyle = "#b8ffb8";
+        ctx.fillRect(snake[i].x, snake[i].y, grid-1, grid-1);
+      }
+
+      // déplacer
+      let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+
+      // collision avec murs (rebond)
+      if(head.x < 0) head.x = canvas.width - grid;
+      if(head.x >= canvas.width) head.x = 0;
+      if(head.y < 0) head.y = canvas.height - grid;
+      if(head.y >= canvas.height) head.y = 0;
+
+      // collision avec soi-même
+      for(let i=1; i<snake.length; i++){
+        if(head.x === snake[i].x && head.y === snake[i].y){
+          snake = [{x: 8 * grid, y: 8 * grid}];
+          dx = grid; dy = 0;
+          score = 0;
+        }
+      }
+
+      snake.unshift(head);
+
+      // manger la nourriture
+      if(head.x === food.x && head.y === food.y){
+        score++;
+        food = {x: Math.floor(Math.random()*20)*grid, y: Math.floor(Math.random()*20)*grid};
+      } else {
+        snake.pop();
+      }
+    }
+
+    setInterval(gameLoop, 150);
+  </script>
+</body>
+</html>
